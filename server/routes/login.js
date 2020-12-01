@@ -108,7 +108,7 @@ let googleUser = await verify(token) // chequeamos las credenciales de google y 
             let usuario = new Usuario();
             usuario.nombre = googleUser.nombre;
             usuario.email = googleUser.email;
-            usuario.img = googleUser.picture;
+            usuario.img = googleUser.img;
             usuario.google = true
             usuario.password = ':-P';
 
