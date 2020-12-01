@@ -5,10 +5,16 @@ const _ = require('underscore');
 
 const app = express();
 const Usuario = require('../models/usuario');
-const usuario = require('../models/usuario');
+const { verificaToken,verificaAdminRole } = require('../middlewares/auth');
 
 //GET
-app.get('/usuario', function(req, res) {
+app.get('/usuario', verificaToken, (req, res) => {
+
+   /* return res.json({
+        usuario: req.usuario,
+        nombre: req.usuario.nombre,
+        email: req.usuario.email
+    }) */
 
     let desde = req.query.desde || 0;
     desde = Number(desde);
@@ -21,14 +27,14 @@ app.get('/usuario', function(req, res) {
            .limit(limite) 
            .exec((err, usuarios) => {
                if(err){
-                   res.status(400).json({
+                return res.status(400).json({
                        ok:false,
                        err
                    })
                }
 
                Usuario.count({estado: true}, (err, total) => {
-                res.json({
+                return res.json({
                     ok:true,
                     usuarios,
                     total
@@ -38,7 +44,7 @@ app.get('/usuario', function(req, res) {
   })
 
 //POST
-app.post('/usuario', function (req, res) {
+app.post('/usuario', [verificaToken,verificaAdminRole], function (req, res) {
     let cuerpo = req.body;
     let usuario = new Usuario({
         nombre: cuerpo.nombre,
@@ -50,14 +56,14 @@ app.post('/usuario', function (req, res) {
     usuario.save((err,usuarioDB) => {
 
         if(err){
-            res.status(400).json({
+            return res.status(400).json({
                 ok: false,
                 err
             })
-            return
+            
         }
 
-        res.json({
+        return res.json({
             ok: true,
             usuario: usuarioDB 
         })
@@ -66,7 +72,7 @@ app.post('/usuario', function (req, res) {
   })
 
 //PUT
-app.put('/usuario/:id', function(req,res){
+app.put('/usuario/:id', [verificaToken,verificaAdminRole], function(req,res){
     let id = req.params.id;
     let cuerpo = _.pick(req.body, ['nombre','email','img','role','estado']);
 
@@ -78,7 +84,7 @@ app.put('/usuario/:id', function(req,res){
             })
         }
 
-        res.json({
+        return res.json({
             ok:true,
             usuario: usuarioDB
         })
@@ -86,7 +92,7 @@ app.put('/usuario/:id', function(req,res){
 })
 
 //DELETE
-app.delete('/usuario/:id', function(req,res){
+app.delete('/usuario/:id', [verificaToken,verificaAdminRole], function(req,res){
     let id = req.params.id;
     let cambiaUsuario = {
         estado: false
