@@ -74,7 +74,8 @@ app.post('/usuario', [verificaToken,verificaAdminRole], function (req, res) {
 //PUT
 app.put('/usuario/:id', [verificaToken,verificaAdminRole], function(req,res){
     let id = req.params.id;
-    let cuerpo = _.pick(req.body, ['nombre','email','img','role','estado']);
+    let cuerpo = _.pick(req.body, ['nombre','email','role','estado']);
+    cuerpo.password = bcrypt.hashSync(req.body.password,10);
 
     Usuario.findByIdAndUpdate(id,cuerpo,{new:true,runValidators:true}, (err,usuarioDB) => {
         if(err){
