@@ -1,0 +1,3 @@
+<?php
+header("location:https://www.bolivar.gob.ar/archivos/20190722115424-instructivo-de-poda.pdf")
+?>
